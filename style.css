@@ -1,0 +1,28 @@
+body {
+  margin: 0;
+  background: #111;
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+.tv {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  color: #00ff88;
+}
+
+#player {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: black;
+}
+
+.info {
+  margin-top: 15px;
+  font-size: 18px;
+}
