@@ -28,7 +28,7 @@ const programacao = [
 const anuncios = [
  {
     nome: "Anúncio 1",
-    videoId: "M7lc1UVf-VE",
+    videoId: "",
     horario: "08:30",
     duracaoSegundos: 30
   },
@@ -45,7 +45,6 @@ const anuncios = [
     duracaoSegundos: 15
   }
 ];
-];
 
 let anunciosTocadosHoje = [];
 
@@ -61,7 +60,6 @@ function onYouTubeIframeAPIReady() {
     },
     events: {
       onReady: iniciarSistema,
-      onStateChange: verificarEstado
     }
   });
 }
