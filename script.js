@@ -28,14 +28,14 @@ const programacao = [
 const anuncios = [
  {
     nome: "Anúncio 1",
-    videoId: "",
+    videoId: "1w7OgIMMRc4",
     horario: "08:30",
     duracaoSegundos: 30
   },
   {
     nome: "Anúncio 2",
-    videoId: "ysz5S6PUM-U",
-    horario: "14:00",
+    videoId: "1w7OgIMMRc4",
+    horario: "14:48",
     duracaoSegundos: 60
   },
   {
