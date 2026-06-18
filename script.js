@@ -26,21 +26,25 @@ const programacao = [
 
 // Coloque aqui os anúncios com horários definidos
 const anuncios = [
-  {
+ {
     nome: "Anúncio 1",
     videoId: "M7lc1UVf-VE",
-    horario: "08:30"
+    horario: "08:30",
+    duracaoSegundos: 30
   },
   {
     nome: "Anúncio 2",
     videoId: "ysz5S6PUM-U",
-    horario: "14:27"
+    horario: "14:00",
+    duracaoSegundos: 60
   },
   {
     nome: "Anúncio 3",
     videoId: "dQw4w9WgXcQ",
-    horario: "20:15"
+    horario: "20:15",
+    duracaoSegundos: 15
   }
+];
 ];
 
 let anunciosTocadosHoje = [];
@@ -116,9 +120,15 @@ function tocarAnuncio(anuncio) {
   anunciosTocadosHoje.push(anuncio.horario);
 
   document.getElementById("status").innerText =
-    "Exibindo anúncio: " + anuncio.nome;
+    "Exibindo anúncio: " + anuncio.nome +
+    " por " + anuncio.duracaoSegundos + " segundos";
 
   player.loadVideoById(anuncio.videoId);
+
+  setTimeout(() => {
+    tocandoAnuncio = false;
+    atualizarProgramacao();
+  }, anuncio.duracaoSegundos * 1000);
 }
 
 function verificarEstado(event) {
