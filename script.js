@@ -1,6 +1,7 @@
 let player;
 let tocandoAnuncio = false;
 let videoPrincipalAtual = null;
+let tempoPausadoPrograma = 0;
 
 // Coloque aqui seus vídeos principais
 const programacao = [
@@ -117,6 +118,9 @@ function tocarAnuncio(anuncio) {
   tocandoAnuncio = true;
   anunciosTocadosHoje.push(anuncio.horario);
 
+  // salva o ponto exato do vídeo principal
+  tempoPausadoPrograma = player.getCurrentTime();
+
   document.getElementById("status").innerText =
     "Exibindo anúncio: " + anuncio.nome +
     " por " + anuncio.duracaoSegundos + " segundos";
@@ -125,7 +129,16 @@ function tocarAnuncio(anuncio) {
 
   setTimeout(() => {
     tocandoAnuncio = false;
-    atualizarProgramacao();
+
+    // volta para o vídeo principal do mesmo ponto
+    player.loadVideoById({
+      videoId: videoPrincipalAtual,
+      startSeconds: tempoPausadoPrograma
+    });
+
+    document.getElementById("status").innerText =
+      "Voltando para a programação...";
+
   }, anuncio.duracaoSegundos * 1000);
 }
 
