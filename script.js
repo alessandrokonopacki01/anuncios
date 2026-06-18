@@ -13,7 +13,7 @@ const programacao = [
   },
   {
     nome: "Programa da tarde",
-    videoId: "M7lc1UVf-VE",
+    videoId: "WrMJeF7nclA",
     inicio: "12:00",
     fim: "18:00"
   },
