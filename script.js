@@ -7,19 +7,19 @@ let tempoPausadoPrograma = 0;
 const programacao = [
   {
     nome: "Programa da manhã",
-    videoId: "ysz5S6PUM-U",
+    videoId: "34QjRfg8mcQ",
     inicio: "08:00",
     fim: "12:00"
   },
   {
     nome: "Programa da tarde",
-    videoId: "WrMJeF7nclA",
+    videoId: "34QjRfg8mcQ",
     inicio: "12:00",
     fim: "18:00"
   },
   {
     nome: "Programa da noite",
-    videoId: "dQw4w9WgXcQ",
+    videoId: "34QjRfg8mcQ",
     inicio: "18:00",
     fim: "23:59"
   }
@@ -48,7 +48,7 @@ const anuncios = [
    {
     nome: "Anúncio 4",
     videoId: "1w7OgIMMRc4",
-    horario: "15:40",
+    horario: "16:04",
     duracaoSegundos: 60
   },
   {
@@ -65,7 +65,7 @@ function onYouTubeIframeAPIReady() {
   player = new YT.Player("player", {
     width: "100%",
     height: "500",
-    videoId: "ysz5S6PUM-U",
+    videoId: "34QjRfg8mcQ",
     playerVars: {
       autoplay: 1,
       controls: 1,
