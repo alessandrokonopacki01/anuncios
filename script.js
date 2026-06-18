@@ -36,7 +36,7 @@ const anuncios = [
   {
     nome: "Anúncio 2",
     videoId: "1w7OgIMMRc4",
-    horario: "14:48",
+    horario: "14:55",
     duracaoSegundos: 60
   },
   {
