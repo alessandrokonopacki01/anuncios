@@ -26,10 +26,9 @@ const programacao = [
 ];
 
 // Coloque aqui os anúncios com horários definidos
-const anuncios = [
 let anuncios =
 JSON.parse(localStorage.getItem("anunciosTV")) || [];
-];
+
 
 let anunciosTocadosHoje = [];
 
