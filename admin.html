@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel Administrativo - TV Local</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <main class="container">
+    <h1>Painel Administrativo</h1>
+    <p>Cadastre os anúncios da programação.</p>
+
+    <form id="formAnuncio">
+      <label>Nome do anúncio</label>
+      <input type="text" id="nome" placeholder="Ex: Padaria Central" required>
+
+      <label>Horário de exibição</label>
+      <input type="time" id="horario" required>
+
+      <label>Duração em segundos</label>
+      <input type="number" id="duracao" placeholder="Ex: 30" required>
+
+      <label>Tipo de anúncio</label>
+      <select id="tipo">
+        <option value="youtube">Vídeo do YouTube</option>
+        <option value="arquivo">Arquivo importado</option>
+      </select>
+
+      <div id="campoYoutube">
+        <label>Link do vídeo do YouTube</label>
+        <input type="text" id="youtubeUrl" placeholder="Cole o link do YouTube">
+      </div>
+
+      <div id="campoArquivo" style="display:none;">
+        <label>Importar anúncio</label>
+        <input type="file" id="arquivo" accept="video/*,image/*">
+      </div>
+
+      <button type="submit">Salvar anúncio</button>
+    </form>
+
+    <h2>Anúncios cadastrados</h2>
+    <div id="listaAnuncios"></div>
+  </main>
+
+  <script src="admin.js"></script>
+</body>
+</html>
