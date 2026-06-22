@@ -52,9 +52,10 @@ function iniciarSistema() {
   atualizarProgramacao();
 
   setInterval(() => {
-    atualizarProgramacao();
-    verificarAnuncios();
-  }, 1000);
+  anuncios = JSON.parse(localStorage.getItem("anunciosTV")) || [];
+  atualizarProgramacao();
+  verificarAnuncios();
+}, 1000);
 }
 
 function atualizarProgramacao() {
