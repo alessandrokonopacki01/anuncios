@@ -63,15 +63,40 @@ function salvar() {
 function renderizarAnuncios() {
   listaAnuncios.innerHTML = "";
 
+  if (anuncios.length === 0) {
+    listaAnuncios.innerHTML = "<p>Nenhum anúncio cadastrado ainda.</p>";
+    return;
+  }
+
   anuncios.forEach(anuncio => {
     const div = document.createElement("div");
     div.className = "card";
 
     div.innerHTML = `
       <h3>${anuncio.nome}</h3>
-      <p><strong>Horário:</strong> ${anuncio.horario}</p>
-      <p><strong>Duração:</strong> ${anuncio.duracaoSegundos} segundos</p>
+
+      <label>Horário</label>
+      <input 
+        type="time" 
+        value="${anuncio.horario}" 
+        onchange="alterarHorario(${anuncio.id}, this.value)"
+      >
+
+      <label>Duração em segundos</label>
+      <input 
+        type="number" 
+        value="${anuncio.duracaoSegundos}" 
+        onchange="alterarDuracao(${anuncio.id}, this.value)"
+      >
+
       <p><strong>Tipo:</strong> ${anuncio.tipo}</p>
+
+      ${
+        anuncio.tipo === "youtube"
+          ? `<p><strong>ID YouTube:</strong> ${anuncio.videoId}</p>`
+          : `<p><strong>Arquivo:</strong> ${anuncio.arquivoNome}</p>`
+      }
+
       <button onclick="excluirAnuncio(${anuncio.id})">Excluir</button>
     `;
 
@@ -95,6 +120,26 @@ function extrairIdYoutube(url) {
   }
 
   return url;
+}
+
+function alterarHorario(id, novoHorario) {
+  const anuncio = anuncios.find(item => item.id === id);
+
+  if (!anuncio) return;
+
+  anuncio.horario = novoHorario;
+  salvar();
+  renderizarAnuncios();
+}
+
+function alterarDuracao(id, novaDuracao) {
+  const anuncio = anuncios.find(item => item.id === id);
+
+  if (!anuncio) return;
+
+  anuncio.duracaoSegundos = Number(novaDuracao);
+  salvar();
+  renderizarAnuncios();
 }
 
 renderizarAnuncios();
