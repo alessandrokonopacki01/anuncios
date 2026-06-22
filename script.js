@@ -27,36 +27,8 @@ const programacao = [
 
 // Coloque aqui os anúncios com horários definidos
 const anuncios = [
- {
-    nome: "Anúncio 1",
-    videoId: "1w7OgIMMRc4",
-    horario: "15:00",
-    duracaoSegundos: 30
-  },
-  {
-    nome: "Anúncio 2",
-    videoId: "1w7OgIMMRc4",
-    horario: "15:20",
-    duracaoSegundos: 60
-  },
-   {
-    nome: "Anúncio 3",
-    videoId: "1w7OgIMMRc4",
-    horario: "15:30",
-    duracaoSegundos: 60
-  },
-   {
-    nome: "Anúncio 4",
-    videoId: "1w7OgIMMRc4",
-    horario: "16:07",
-    duracaoSegundos: 60
-  },
-  {
-    nome: "Anúncio 5",
-    videoId: "dQw4w9WgXcQ",
-    horario: "20:15",
-    duracaoSegundos: 15
-  }
+let anuncios =
+JSON.parse(localStorage.getItem("anunciosTV")) || [];
 ];
 
 let anunciosTocadosHoje = [];
