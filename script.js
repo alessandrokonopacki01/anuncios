@@ -163,6 +163,9 @@ async function tocarMidia(item, startSeconds = 0) {
 
 function mostrarYoutube() {
   youtubeBox.style.display = "block";
+  youtubeBox.style.width = "100vw";
+  youtubeBox.style.height = "100vh";
+
   videoLocal.style.display = "none";
   imagemLocal.style.display = "none";
 }
