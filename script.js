@@ -18,8 +18,6 @@ let dataControle =
 const youtubeBox = document.getElementById("youtubePlayer");
 const videoLocal = document.getElementById("videoLocal");
 const imagemLocal = document.getElementById("imagemLocal");
-const statusEl = document.getElementById("status");
-const proximoEl = document.getElementById("proximo");
 
 function onYouTubeIframeAPIReady() {
   player = new YT.Player("youtubePlayer", {
@@ -76,12 +74,6 @@ async function atualizarProgramacao() {
     return minutosAgora >= inicio && minutosAgora <= fim;
   });
 
-  if (!programaAtual) {
-    pararTudo();
-    statusEl.innerText = "Nenhum programa cadastrado para este horário.";
-    return;
-  }
-
   const idAtual = criarIdMidia(programaAtual);
 
   if (midiaAtualId !== idAtual) {
@@ -91,7 +83,6 @@ async function atualizarProgramacao() {
     await tocarMidia(programaAtual);
   }
 
-  statusEl.innerText = "No ar: " + programaAtual.nome;
 }
 
 async function verificarAnuncios() {
@@ -119,7 +110,7 @@ async function tocarAnuncio(anuncio) {
     tempoPausadoPrograma = videoLocal.currentTime || 0;
   }
 
-  statusEl.innerText = "Exibindo anúncio: " + anuncio.nome;
+
 
   await tocarMidia(anuncio);
 
@@ -128,7 +119,6 @@ async function tocarAnuncio(anuncio) {
 
     if (midiaProgramaAtual) {
       await tocarMidia(midiaProgramaAtual, tempoPausadoPrograma);
-      statusEl.innerText = "Voltando para: " + midiaProgramaAtual.nome;
     }
   }, anuncio.duracaoSegundos * 1000);
 }
@@ -152,11 +142,6 @@ async function tocarMidia(item, startSeconds = 0) {
 
   const arquivo = await buscarArquivo(item.arquivoId);
 
-  if (!arquivo) {
-    statusEl.innerText = "Arquivo não encontrado: " + item.arquivoNome;
-    return;
-  }
-
   const url = URL.createObjectURL(arquivo.blob);
 
   if (arquivo.tipo.startsWith("image/")) {
@@ -166,10 +151,6 @@ async function tocarMidia(item, startSeconds = 0) {
     videoLocal.src = url;
     videoLocal.currentTime = startSeconds || 0;
     mostrarVideo();
-
-    videoLocal.play().catch(() => {
-      statusEl.innerText = "Clique no vídeo uma vez para liberar o autoplay do navegador.";
-    });
   }
 }
 
@@ -254,80 +235,73 @@ function mostrarProximoAnuncio() {
     .filter(ad => converterHora(ad.horario) >= agora && !anunciosTocadosHoje.includes(ad.id))
     .sort((a, b) => converterHora(a.horario) - converterHora(b.horario));
 
-  if (proximos.length === 0) {
-    proximoEl.innerText = "Nenhum anúncio pendente para hoje.";
-    return;
+
+
+  function limparControleDiario() {
+    const hoje = new Date().toDateString();
+
+    if (hoje !== dataControle) {
+      anunciosTocadosHoje = [];
+      dataControle = hoje;
+
+      sessionStorage.setItem("anunciosTocadosHoje", JSON.stringify(anunciosTocadosHoje));
+      sessionStorage.setItem("dataControle", dataControle);
+    }
   }
 
-  proximoEl.innerText =
-    "Próximo anúncio: " + proximos[0].nome + " às " + proximos[0].horario;
-}
-
-function limparControleDiario() {
-  const hoje = new Date().toDateString();
-
-  if (hoje !== dataControle) {
-    anunciosTocadosHoje = [];
-    dataControle = hoje;
-
-    sessionStorage.setItem("anunciosTocadosHoje", JSON.stringify(anunciosTocadosHoje));
-    sessionStorage.setItem("dataControle", dataControle);
+  function criarIdMidia(item) {
+    return item.tipo + "_" + (item.videoId || item.arquivoId) + "_" + item.inicio + "_" + item.fim;
   }
-}
 
-function criarIdMidia(item) {
-  return item.tipo + "_" + (item.videoId || item.arquivoId) + "_" + item.inicio + "_" + item.fim;
-}
+  function minutosAtuais() {
+    const agora = new Date();
+    return agora.getHours() * 60 + agora.getMinutes();
+  }
 
-function minutosAtuais() {
-  const agora = new Date();
-  return agora.getHours() * 60 + agora.getMinutes();
-}
+  function converterHora(hora) {
+    const [h, m] = hora.split(":").map(Number);
+    return h * 60 + m;
+  }
 
-function converterHora(hora) {
-  const [h, m] = hora.split(":").map(Number);
-  return h * 60 + m;
-}
+  function formatarHora(data) {
+    const h = String(data.getHours()).padStart(2, "0");
+    const m = String(data.getMinutes()).padStart(2, "0");
+    return `${h}:${m}`;
+  }
 
-function formatarHora(data) {
-  const h = String(data.getHours()).padStart(2, "0");
-  const m = String(data.getMinutes()).padStart(2, "0");
-  return `${h}:${m}`;
-}
+  document.addEventListener("DOMContentLoaded", () => {
 
-document.addEventListener("DOMContentLoaded", () => {
+    const botao = document.createElement("button");
 
-  const botao = document.createElement("button");
+    botao.innerText = "INICIAR TV";
 
-  botao.innerText = "INICIAR TV";
+    botao.style.position = "fixed";
+    botao.style.top = "0";
+    botao.style.left = "0";
+    botao.style.width = "100vw";
+    botao.style.height = "100vh";
+    botao.style.fontSize = "40px";
+    botao.style.background = "black";
+    botao.style.color = "white";
+    botao.style.border = "none";
+    botao.style.zIndex = "99999";
 
-  botao.style.position = "fixed";
-  botao.style.top = "0";
-  botao.style.left = "0";
-  botao.style.width = "100vw";
-  botao.style.height = "100vh";
-  botao.style.fontSize = "40px";
-  botao.style.background = "black";
-  botao.style.color = "white";
-  botao.style.border = "none";
-  botao.style.zIndex = "99999";
+    document.body.appendChild(botao);
 
-  document.body.appendChild(botao);
+    botao.onclick = async () => {
+      try {
+        await document.documentElement.requestFullscreen();
+      } catch (e) {
+        console.log("Fullscreen bloqueado:", e);
+      }
 
-  botao.onclick = async () => {
-    try {
-      await document.documentElement.requestFullscreen();
-    } catch (e) {
-      console.log("Fullscreen bloqueado:", e);
-    }
+      botao.remove();
 
-    botao.remove();
+      if (videoLocal) {
+        videoLocal.muted = true;
+      }
 
-    if (videoLocal) {
-      videoLocal.muted = true;
-    }
+      iniciarSistema();
+    };
 
-    iniciarSistema();
-  };
-
-});
+  });
