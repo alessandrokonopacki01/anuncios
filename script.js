@@ -279,3 +279,29 @@ function formatarHora(data) {
   const m = String(data.getMinutes()).padStart(2, "0");
   return `${h}:${m}`;
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const botao = document.createElement("button");
+
+    botao.innerText = "INICIAR TV";
+
+    botao.style.position = "fixed";
+    botao.style.top = "0";
+    botao.style.left = "0";
+    botao.style.width = "100vw";
+    botao.style.height = "100vh";
+    botao.style.fontSize = "40px";
+    botao.style.background = "black";
+    botao.style.color = "white";
+    botao.style.border = "none";
+    botao.style.zIndex = "99999";
+
+    document.body.appendChild(botao);
+
+    botao.onclick = () => {
+        document.documentElement.requestFullscreen();
+        botao.remove();
+    };
+
+});
