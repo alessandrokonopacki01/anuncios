@@ -6,17 +6,24 @@ body {
 }
 
 .container {
-  max-width: 800px;
+  max-width: 980px;
   margin: auto;
   padding: 30px;
 }
 
-h1 {
+h1, h2 {
   color: #00ff88;
 }
 
+.bloco {
+  background: #171717;
+  padding: 22px;
+  border-radius: 14px;
+  margin-bottom: 28px;
+}
+
 form {
-  background: #1c1c1c;
+  background: #1f1f1f;
   padding: 20px;
   border-radius: 12px;
 }
@@ -24,6 +31,7 @@ form {
 label {
   display: block;
   margin-top: 15px;
+  font-weight: bold;
 }
 
 input, select, button {
@@ -33,6 +41,13 @@ input, select, button {
   border: none;
   border-radius: 8px;
   font-size: 16px;
+  box-sizing: border-box;
+}
+
+small {
+  display: block;
+  color: #bbb;
+  margin-top: 6px;
 }
 
 button {
@@ -44,11 +59,15 @@ button {
 }
 
 .card {
-  background: #222;
-  padding: 15px;
-  margin-top: 12px;
+  background: #242424;
+  padding: 16px;
+  margin-top: 14px;
   border-left: 5px solid #00ff88;
   border-radius: 8px;
+}
+
+.card h3 {
+  margin-top: 0;
 }
 
 .card button {

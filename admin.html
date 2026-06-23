@@ -6,42 +6,79 @@
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-
   <main class="container">
     <h1>Painel Administrativo</h1>
-    <p>Cadastre os anúncios da programação.</p>
+    <p>Configure a programação normal e os anúncios da sua TV local.</p>
 
-    <form id="formAnuncio">
-      <label>Nome do anúncio</label>
-      <input type="text" id="nome" placeholder="Ex: Padaria Central" required>
+    <section class="bloco">
+      <h2>Programação normal</h2>
 
-      <label>Horário de exibição</label>
-      <input type="time" id="horario" required>
+      <form id="formPrograma">
+        <label>Nome do programa</label>
+        <input type="text" id="programaNome" required>
 
-      <label>Duração em segundos</label>
-      <input type="number" id="duracao" placeholder="Ex: 30" required>
+        <label>Início</label>
+        <input type="time" id="programaInicio" required>
 
-      <label>Tipo de anúncio</label>
-      <select id="tipo">
-        <option value="youtube">Vídeo do YouTube</option>
-        <option value="arquivo">Arquivo importado</option>
-      </select>
+        <label>Fim</label>
+        <input type="time" id="programaFim" required>
 
-      <div id="campoYoutube">
-        <label>Link do vídeo do YouTube</label>
-        <input type="text" id="youtubeUrl" placeholder="Cole o link do YouTube">
-      </div>
+        <label>Tipo de vídeo</label>
+        <select id="programaTipo">
+          <option value="youtube">YouTube</option>
+          <option value="arquivo">Arquivo do PC</option>
+        </select>
 
-      <div id="campoArquivo" style="display:none;">
-        <label>Importar anúncio</label>
-        <input type="file" id="arquivo" accept="video/*,image/*">
-      </div>
+        <div id="programaCampoYoutube">
+          <label>Link ou ID do YouTube</label>
+          <input type="text" id="programaYoutube">
+        </div>
 
-      <button type="submit">Salvar anúncio</button>
-    </form>
+        <div id="programaCampoArquivo" style="display:none;">
+          <label>Arquivo do PC</label>
+          <input type="file" id="programaArquivo" accept="video/*,image/*">
+        </div>
 
-    <h2>Anúncios cadastrados</h2>
-    <div id="listaAnuncios"></div>
+        <button type="submit">Salvar programa</button>
+      </form>
+
+      <div id="listaProgramas"></div>
+    </section>
+
+    <section class="bloco">
+      <h2>Programação dos anúncios</h2>
+
+      <form id="formAnuncio">
+        <label>Nome do anúncio</label>
+        <input type="text" id="anuncioNome" required>
+
+        <label>Horário de exibição</label>
+        <input type="time" id="anuncioHorario" required>
+
+        <label>Duração em segundos</label>
+        <input type="number" id="anuncioDuracao" required>
+
+        <label>Tipo de anúncio</label>
+        <select id="anuncioTipo">
+          <option value="youtube">YouTube</option>
+          <option value="arquivo">Arquivo do PC</option>
+        </select>
+
+        <div id="anuncioCampoYoutube">
+          <label>Link ou ID do YouTube</label>
+          <input type="text" id="anuncioYoutube">
+        </div>
+
+        <div id="anuncioCampoArquivo" style="display:none;">
+          <label>Arquivo do PC</label>
+          <input type="file" id="anuncioArquivo" accept="video/*,image/*">
+        </div>
+
+        <button type="submit">Salvar anúncio</button>
+      </form>
+
+      <div id="listaAnuncios"></div>
+    </section>
   </main>
 
   <script src="admin.js"></script>

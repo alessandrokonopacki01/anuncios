@@ -6,11 +6,14 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
   <div class="tv">
     <h1>Minha TV Programada</h1>
 
-    <div id="player"></div>
+    <div class="tela">
+      <div id="youtubePlayer"></div>
+      <video id="videoLocal" controls autoplay muted></video>
+      <img id="imagemLocal" alt="Mídia local">
+    </div>
 
     <div class="info">
       <p id="status">Carregando programação...</p>
