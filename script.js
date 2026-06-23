@@ -304,4 +304,4 @@ function mostrarProximoAnuncio() {
       iniciarSistema();
     };
 
-  });
+});
