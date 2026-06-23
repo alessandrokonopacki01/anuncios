@@ -151,6 +151,13 @@ async function tocarMidia(item, startSeconds = 0) {
     videoLocal.src = url;
     videoLocal.currentTime = startSeconds || 0;
     mostrarVideo();
+    videoLocal.muted = false;
+    videoLocal.volume = 1;
+
+    videoLocal.play().catch(() => {
+      console.log("Autoplay bloqueado.");
+    });
+
   }
 }
 
@@ -300,8 +307,8 @@ document.addEventListener("DOMContentLoaded", () => {
     botao.remove();
 
     if (videoLocal) {
-      videoLocal.muted = true;
-      videoLocal.play().catch(() => {});
+      videoLocal.muted = false;
+      videoLocal.volume = 1;
     }
 
     iniciarSistema();
