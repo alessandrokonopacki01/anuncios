@@ -189,8 +189,12 @@ function mostrarImagem() {
 }
 
 function pararTudo(limparTela = true) {
-  if (player && player.stopVideo) {
-    player.stopVideo();
+  try {
+    if (player && typeof player.stopVideo === "function") {
+      player.stopVideo();
+    }
+  } catch (e) {
+    console.warn("Aviso do YouTube ignorado:", e);
   }
 
   videoLocal.pause();
