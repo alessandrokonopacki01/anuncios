@@ -180,6 +180,14 @@ function mostrarVideo() {
   youtubeBox.style.display = "none";
   videoLocal.style.display = "block";
   imagemLocal.style.display = "none";
+
+  try {
+    if (player && typeof player.pauseVideo === "function") {
+      player.pauseVideo();
+    }
+  } catch (e) {
+    console.warn("YouTube pausado/ignorado.");
+  }
 }
 
 function mostrarImagem() {
