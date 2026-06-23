@@ -235,73 +235,75 @@ function mostrarProximoAnuncio() {
     .filter(ad => converterHora(ad.horario) >= agora && !anunciosTocadosHoje.includes(ad.id))
     .sort((a, b) => converterHora(a.horario) - converterHora(b.horario));
 
+  // Sem texto na tela. Função mantida apenas para não quebrar o sistema.
+}
 
+function limparControleDiario() {
+  const hoje = new Date().toDateString();
 
-  function limparControleDiario() {
-    const hoje = new Date().toDateString();
+  if (hoje !== dataControle) {
+    anunciosTocadosHoje = [];
+    dataControle = hoje;
 
-    if (hoje !== dataControle) {
-      anunciosTocadosHoje = [];
-      dataControle = hoje;
+    sessionStorage.setItem("anunciosTocadosHoje", JSON.stringify(anunciosTocadosHoje));
+    sessionStorage.setItem("dataControle", dataControle);
+  }
+}
 
-      sessionStorage.setItem("anunciosTocadosHoje", JSON.stringify(anunciosTocadosHoje));
-      sessionStorage.setItem("dataControle", dataControle);
+function criarIdMidia(item) {
+  if (!item) return "";
+
+  return item.tipo + "_" + (item.videoId || item.arquivoId) + "_" + (item.inicio || item.horario || "");
+}
+
+function minutosAtuais() {
+  const agora = new Date();
+  return agora.getHours() * 60 + agora.getMinutes();
+}
+
+function converterHora(hora) {
+  const [h, m] = hora.split(":").map(Number);
+  return h * 60 + m;
+}
+
+function formatarHora(data) {
+  const h = String(data.getHours()).padStart(2, "0");
+  const m = String(data.getMinutes()).padStart(2, "0");
+  return `${h}:${m}`;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const botao = document.createElement("button");
+
+  botao.innerText = "INICIAR TV";
+
+  botao.style.position = "fixed";
+  botao.style.top = "0";
+  botao.style.left = "0";
+  botao.style.width = "100vw";
+  botao.style.height = "100vh";
+  botao.style.fontSize = "40px";
+  botao.style.background = "black";
+  botao.style.color = "white";
+  botao.style.border = "none";
+  botao.style.zIndex = "99999";
+
+  document.body.appendChild(botao);
+
+  botao.onclick = async () => {
+    try {
+      await document.documentElement.requestFullscreen();
+    } catch (e) {
+      console.log("Fullscreen bloqueado:", e);
     }
-  }
 
-  function criarIdMidia(item) {
-    return item.tipo + "_" + (item.videoId || item.arquivoId) + "_" + item.inicio + "_" + item.fim;
-  }
+    botao.remove();
 
-  function minutosAtuais() {
-    const agora = new Date();
-    return agora.getHours() * 60 + agora.getMinutes();
-  }
+    if (videoLocal) {
+      videoLocal.muted = true;
+      videoLocal.play().catch(() => {});
+    }
 
-  function converterHora(hora) {
-    const [h, m] = hora.split(":").map(Number);
-    return h * 60 + m;
-  }
-
-  function formatarHora(data) {
-    const h = String(data.getHours()).padStart(2, "0");
-    const m = String(data.getMinutes()).padStart(2, "0");
-    return `${h}:${m}`;
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-
-    const botao = document.createElement("button");
-
-    botao.innerText = "INICIAR TV";
-
-    botao.style.position = "fixed";
-    botao.style.top = "0";
-    botao.style.left = "0";
-    botao.style.width = "100vw";
-    botao.style.height = "100vh";
-    botao.style.fontSize = "40px";
-    botao.style.background = "black";
-    botao.style.color = "white";
-    botao.style.border = "none";
-    botao.style.zIndex = "99999";
-
-    document.body.appendChild(botao);
-
-    botao.onclick = async () => {
-      try {
-        await document.documentElement.requestFullscreen();
-      } catch (e) {
-        console.log("Fullscreen bloqueado:", e);
-      }
-
-      botao.remove();
-
-      if (videoLocal) {
-        videoLocal.muted = true;
-      }
-
-      iniciarSistema();
-    };
-
+    iniciarSistema();
+  };
 });
