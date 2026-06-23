@@ -7,6 +7,7 @@ let tocandoAnuncio = false;
 let midiaAtualId = null;
 let midiaProgramaAtual = null;
 let tempoPausadoPrograma = 0;
+let tvIniciada = false;
 
 let anunciosTocadosHoje =
   JSON.parse(sessionStorage.getItem("anunciosTocadosHoje")) || [];
@@ -32,13 +33,15 @@ function onYouTubeIframeAPIReady() {
     events: {
       onReady: () => {
         youtubePronto = true;
-        iniciarSistema();
       }
     }
   });
 }
 
 function iniciarSistema() {
+  if (tvIniciada) return;
+
+  tvIniciada = true;
   atualizarSistema();
   setInterval(atualizarSistema, 1000);
 }
@@ -294,26 +297,37 @@ function formatarHora(data) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    const botao = document.createElement("button");
+  const botao = document.createElement("button");
 
-    botao.innerText = "INICIAR TV";
+  botao.innerText = "INICIAR TV";
 
-    botao.style.position = "fixed";
-    botao.style.top = "0";
-    botao.style.left = "0";
-    botao.style.width = "100vw";
-    botao.style.height = "100vh";
-    botao.style.fontSize = "40px";
-    botao.style.background = "black";
-    botao.style.color = "white";
-    botao.style.border = "none";
-    botao.style.zIndex = "99999";
+  botao.style.position = "fixed";
+  botao.style.top = "0";
+  botao.style.left = "0";
+  botao.style.width = "100vw";
+  botao.style.height = "100vh";
+  botao.style.fontSize = "40px";
+  botao.style.background = "black";
+  botao.style.color = "white";
+  botao.style.border = "none";
+  botao.style.zIndex = "99999";
 
-    document.body.appendChild(botao);
+  document.body.appendChild(botao);
 
-    botao.onclick = () => {
-        document.documentElement.requestFullscreen();
-        botao.remove();
-    };
+  botao.onclick = async () => {
+    try {
+      await document.documentElement.requestFullscreen();
+    } catch (e) {
+      console.log("Fullscreen bloqueado:", e);
+    }
+
+    botao.remove();
+
+    if (videoLocal) {
+      videoLocal.muted = true;
+    }
+
+    iniciarSistema();
+  };
 
 });
