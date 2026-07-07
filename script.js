@@ -23,21 +23,16 @@ function onYouTubeIframeAPIReady() {
   player = new YT.Player("youtubePlayer", {
     width: "100%",
     height: "100%",
+    videoId: "ysz5S6PUM-U",
     playerVars: {
       autoplay: 1,
       controls: 1,
-      rel: 0,
-      enablejsapi: 1,
-      origin: window.location.origin
+      rel: 0
     },
     events: {
       onReady: () => {
         youtubePronto = true;
         console.log("YouTube pronto.");
-
-        if (tvIniciada) {
-          atualizarSistema();
-        }
       }
     }
   });
@@ -332,19 +327,23 @@ document.addEventListener("DOMContentLoaded", () => {
   document.body.appendChild(botao);
 
   botao.onclick = async () => {
-    try {
-      await document.documentElement.requestFullscreen();
-    } catch (e) {
-      console.log("Fullscreen bloqueado:", e);
+  try {
+    await document.documentElement.requestFullscreen();
+  } catch (e) {
+    console.log("Fullscreen bloqueado:", e);
+  }
+
+  botao.remove();
+
+  if (videoLocal) {
+    videoLocal.muted = false;
+    videoLocal.volume = 1;
+  }
+
+  const esperarYoutube = setInterval(() => {
+    if (youtubePronto) {
+      clearInterval(esperarYoutube);
+      iniciarSistema();
     }
-
-    botao.remove();
-
-    if (videoLocal) {
-      videoLocal.muted = false;
-      videoLocal.volume = 1;
-    }
-
-    iniciarSistema();
-  };
-});
+  }, 300);
+};
