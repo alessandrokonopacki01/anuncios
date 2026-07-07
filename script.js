@@ -71,8 +71,15 @@ async function atualizarProgramacao() {
     const inicio = converterHora(programa.inicio);
     const fim = converterHora(programa.fim);
 
-    return minutosAgora >= inicio && minutosAgora <= fim;
+    return minutosAgora >= inicio && minutosAgora < fim;
   });
+
+  if (!programaAtual) {
+    midiaAtualId = null;
+    midiaProgramaAtual = null;
+    pararTudo(true);
+    return;
+  }
 
   const idAtual = criarIdMidia(programaAtual);
 
@@ -82,7 +89,6 @@ async function atualizarProgramacao() {
 
     await tocarMidia(programaAtual);
   }
-
 }
 
 async function verificarAnuncios() {
@@ -124,6 +130,14 @@ async function tocarAnuncio(anuncio) {
 }
 
 async function tocarMidia(item, startSeconds = 0) {
+
+  // Impede erro caso não exista mídia para o horário atual
+  if (!item) {
+    console.warn("Nenhuma mídia encontrada para este horário.");
+    pararTudo(true);
+    return;
+  }
+
   pararTudo(false);
 
   if (item.tipo === "youtube") {
