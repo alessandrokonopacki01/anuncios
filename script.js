@@ -1,8 +1,5 @@
 const DB_NAME = "tvLocalDB";
 const STORE_NAME = "arquivos";
-const loadingBox = document.getElementById("loadingBox");
-const progressoLoading = document.getElementById("progressoLoading");
-const loadingTexto = document.getElementById("loadingTexto");
 
 let loadingInterval = null;
 
@@ -24,6 +21,40 @@ const youtubeBox = document.getElementById("youtubePlayer");
 const videoLocal = document.getElementById("videoLocal");
 const imagemLocal = document.getElementById("imagemLocal");
 
+const loadingBox = document.getElementById("loadingBox");
+const progressoLoading = document.getElementById("progressoLoading");
+const loadingTexto = document.getElementById("loadingTexto");
+
+function mostrarLoading(texto = "Carregando vídeo...") {
+  if (!loadingBox || !progressoLoading || !loadingTexto) return;
+
+  loadingTexto.innerText = texto;
+  loadingBox.style.display = "block";
+  progressoLoading.style.width = "0%";
+
+  let progresso = 0;
+
+  clearInterval(loadingInterval);
+
+  loadingInterval = setInterval(() => {
+    progresso += 5;
+    if (progresso > 90) progresso = 90;
+    progressoLoading.style.width = progresso + "%";
+  }, 300);
+}
+
+function esconderLoading() {
+  if (!loadingBox || !progressoLoading) return;
+
+  clearInterval(loadingInterval);
+  progressoLoading.style.width = "100%";
+
+  setTimeout(() => {
+    loadingBox.style.display = "none";
+    progressoLoading.style.width = "0%";
+  }, 300);
+}
+
 function onYouTubeIframeAPIReady() {
   player = new YT.Player("youtubePlayer", {
     width: "100%",
@@ -32,12 +63,32 @@ function onYouTubeIframeAPIReady() {
     playerVars: {
       autoplay: 1,
       controls: 1,
-      rel: 0
+      rel: 0,
+      enablejsapi: 1,
+      origin: window.location.origin
     },
     events: {
       onReady: () => {
         youtubePronto = true;
         console.log("YouTube pronto.");
+        esconderLoading();
+      },
+
+      onStateChange: (event) => {
+        console.log("Estado YouTube:", event.data);
+
+        if (event.data === YT.PlayerState.PLAYING) {
+          esconderLoading();
+        }
+
+        if (event.data === YT.PlayerState.BUFFERING) {
+          mostrarLoading("Carregando/Buferizando vídeo...");
+        }
+      },
+
+      onError: (event) => {
+        console.error("Erro YouTube:", event.data);
+        mostrarLoading("Erro ao carregar vídeo. Código: " + event.data);
       }
     }
   });
@@ -98,34 +149,6 @@ async function atualizarProgramacao() {
   }
 }
 
-function mostrarLoading(texto = "Carregando vídeo...") {
-  loadingTexto.innerText = texto;
-  loadingBox.style.display = "block";
-  progressoLoading.style.width = "0%";
-
-  let progresso = 0;
-
-  clearInterval(loadingInterval);
-
-  loadingInterval = setInterval(() => {
-    progresso += 5;
-
-    if (progresso > 90) progresso = 90;
-
-    progressoLoading.style.width = progresso + "%";
-  }, 300);
-}
-
-function esconderLoading() {
-  clearInterval(loadingInterval);
-  progressoLoading.style.width = "100%";
-
-  setTimeout(() => {
-    loadingBox.style.display = "none";
-    progressoLoading.style.width = "0%";
-  }, 300);
-}
-
 async function verificarAnuncios() {
   const anuncios = pegarAnuncios();
   const agora = formatarHora(new Date());
@@ -151,8 +174,6 @@ async function tocarAnuncio(anuncio) {
     tempoPausadoPrograma = videoLocal.currentTime || 0;
   }
 
-
-
   await tocarMidia(anuncio);
 
   setTimeout(async () => {
@@ -165,8 +186,6 @@ async function tocarAnuncio(anuncio) {
 }
 
 async function tocarMidia(item, startSeconds = 0) {
-
-  // Impede erro caso não exista mídia para o horário atual
   if (!item) {
     console.warn("Nenhuma mídia encontrada para este horário.");
     pararTudo(true);
@@ -177,26 +196,36 @@ async function tocarMidia(item, startSeconds = 0) {
 
   if (item.tipo === "youtube") {
     mostrarYoutube();
+    mostrarLoading("Carregando vídeo do YouTube...");
 
-    if (!youtubePronto) {
+    if (!youtubePronto || !player) {
       console.warn("YouTube ainda não está pronto. Tentando novamente...");
       setTimeout(() => tocarMidia(item, startSeconds), 500);
       return;
     }
 
+    if (!item.videoId) {
+      console.warn("Vídeo do YouTube sem ID:", item);
+      mostrarLoading("Erro: vídeo sem ID.");
+      return;
+    }
+
     player.loadVideoById({
       videoId: item.videoId,
-      startSeconds
+      startSeconds: startSeconds || 0
     });
 
     player.playVideo();
     return;
   }
 
+  mostrarLoading("Carregando arquivo local...");
+
   const arquivo = await buscarArquivo(item.arquivoId);
 
   if (!arquivo || !arquivo.blob) {
     console.warn("Arquivo não encontrado no IndexedDB:", item);
+    mostrarLoading("Arquivo não encontrado.");
     pararTudo(true);
     return;
   }
@@ -206,6 +235,7 @@ async function tocarMidia(item, startSeconds = 0) {
   if (arquivo.tipo.startsWith("image/")) {
     imagemLocal.src = url;
     mostrarImagem();
+    esconderLoading();
   } else {
     videoLocal.src = url;
     videoLocal.currentTime = startSeconds || 0;
@@ -213,10 +243,22 @@ async function tocarMidia(item, startSeconds = 0) {
     videoLocal.muted = false;
     videoLocal.volume = 1;
 
+    videoLocal.onplaying = () => {
+      esconderLoading();
+    };
+
+    videoLocal.onwaiting = () => {
+      mostrarLoading("Carregando vídeo local...");
+    };
+
+    videoLocal.onerror = () => {
+      mostrarLoading("Erro ao carregar vídeo local.");
+    };
+
     videoLocal.play().catch(() => {
       console.log("Autoplay bloqueado.");
+      mostrarLoading("Clique na tela para iniciar o vídeo.");
     });
-
   }
 }
 
@@ -250,6 +292,8 @@ function mostrarImagem() {
 }
 
 function pararTudo(limparTela = true) {
+  esconderLoading();
+
   try {
     if (player && typeof player.stopVideo === "function") {
       player.stopVideo();
@@ -258,7 +302,9 @@ function pararTudo(limparTela = true) {
     console.warn("Aviso do YouTube ignorado:", e);
   }
 
-  videoLocal.pause();
+  if (videoLocal) {
+    videoLocal.pause();
+  }
 
   if (limparTela) {
     youtubeBox.style.display = "none";
@@ -303,8 +349,6 @@ function mostrarProximoAnuncio() {
   const proximos = anuncios
     .filter(ad => converterHora(ad.horario) >= agora && !anunciosTocadosHoje.includes(ad.id))
     .sort((a, b) => converterHora(a.horario) - converterHora(b.horario));
-
-  // Sem texto na tela. Função mantida apenas para não quebrar o sistema.
 }
 
 function limparControleDiario() {
@@ -373,9 +417,12 @@ document.addEventListener("DOMContentLoaded", () => {
       videoLocal.volume = 1;
     }
 
+    mostrarLoading("Preparando YouTube...");
+
     const esperarYoutube = setInterval(() => {
       if (youtubePronto) {
         clearInterval(esperarYoutube);
+        esconderLoading();
         iniciarSistema();
       }
     }, 300);
