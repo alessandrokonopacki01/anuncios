@@ -1,5 +1,10 @@
 const DB_NAME = "tvLocalDB";
 const STORE_NAME = "arquivos";
+const loadingBox = document.getElementById("loadingBox");
+const progressoLoading = document.getElementById("progressoLoading");
+const loadingTexto = document.getElementById("loadingTexto");
+
+let loadingInterval = null;
 
 let player;
 let youtubePronto = false;
@@ -91,6 +96,34 @@ async function atualizarProgramacao() {
 
     await tocarMidia(programaAtual);
   }
+}
+
+function mostrarLoading(texto = "Carregando vídeo...") {
+  loadingTexto.innerText = texto;
+  loadingBox.style.display = "block";
+  progressoLoading.style.width = "0%";
+
+  let progresso = 0;
+
+  clearInterval(loadingInterval);
+
+  loadingInterval = setInterval(() => {
+    progresso += 5;
+
+    if (progresso > 90) progresso = 90;
+
+    progressoLoading.style.width = progresso + "%";
+  }, 300);
+}
+
+function esconderLoading() {
+  clearInterval(loadingInterval);
+  progressoLoading.style.width = "100%";
+
+  setTimeout(() => {
+    loadingBox.style.display = "none";
+    progressoLoading.style.width = "0%";
+  }, 300);
 }
 
 async function verificarAnuncios() {
