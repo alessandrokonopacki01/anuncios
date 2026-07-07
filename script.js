@@ -146,8 +146,11 @@ async function tocarMidia(item, startSeconds = 0) {
   if (item.tipo === "youtube") {
     mostrarYoutube();
 
-    if (!youtubePronto) return;
-
+    if (!youtubePronto) {
+      console.warn("YouTube ainda não está pronto. Tentando novamente...");
+      setTimeout(() => tocarMidia(item, startSeconds), 500);
+      return;
+    }
     player.loadVideoById({
       videoId: item.videoId,
       startSeconds
