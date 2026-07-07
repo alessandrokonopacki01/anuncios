@@ -23,10 +23,12 @@ function onYouTubeIframeAPIReady() {
   player = new YT.Player("youtubePlayer", {
     width: "100%",
     height: "100%",
+    videoId: "",
     playerVars: {
       autoplay: 1,
       controls: 1,
       rel: 0,
+      enablejsapi: 1,
       origin: window.location.origin
     },
     events: {
