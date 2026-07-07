@@ -23,7 +23,6 @@ function onYouTubeIframeAPIReady() {
   player = new YT.Player("youtubePlayer", {
     width: "100%",
     height: "100%",
-    videoId: "",
     playerVars: {
       autoplay: 1,
       controls: 1,
@@ -34,6 +33,11 @@ function onYouTubeIframeAPIReady() {
     events: {
       onReady: () => {
         youtubePronto = true;
+        console.log("YouTube pronto.");
+
+        if (tvIniciada) {
+          atualizarSistema();
+        }
       }
     }
   });
@@ -143,22 +147,23 @@ async function tocarMidia(item, startSeconds = 0) {
 
   pararTudo(false);
 
-  if (item.tipo === "youtube") {
-    mostrarYoutube();
+ if (item.tipo === "youtube") {
+  mostrarYoutube();
 
-    if (!youtubePronto) {
-      console.warn("YouTube ainda não está pronto. Tentando novamente...");
-      setTimeout(() => tocarMidia(item, startSeconds), 500);
-      return;
-    }
-    player.loadVideoById({
-      videoId: item.videoId,
-      startSeconds
-    });
-
-    player.playVideo();
+  if (!youtubePronto) {
+    console.warn("YouTube ainda não está pronto. Tentando novamente...");
+    setTimeout(() => tocarMidia(item, startSeconds), 500);
     return;
   }
+
+  player.loadVideoById({
+    videoId: item.videoId,
+    startSeconds
+  });
+
+  player.playVideo();
+  return;
+}
 
   const arquivo = await buscarArquivo(item.arquivoId);
 
