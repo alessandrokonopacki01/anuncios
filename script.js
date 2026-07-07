@@ -27,6 +27,7 @@ function onYouTubeIframeAPIReady() {
       autoplay: 1,
       controls: 1,
       rel: 0
+      origin: window.location.origin
     },
     events: {
       onReady: () => {
@@ -154,15 +155,15 @@ async function tocarMidia(item, startSeconds = 0) {
     return;
   }
 
- const arquivo = await buscarArquivo(item.arquivoId);
+  const arquivo = await buscarArquivo(item.arquivoId);
 
-if (!arquivo || !arquivo.blob) {
-  console.warn("Arquivo não encontrado no IndexedDB:", item);
-  pararTudo(true);
-  return;
-}
+  if (!arquivo || !arquivo.blob) {
+    console.warn("Arquivo não encontrado no IndexedDB:", item);
+    pararTudo(true);
+    return;
+  }
 
-const url = URL.createObjectURL(arquivo.blob);
+  const url = URL.createObjectURL(arquivo.blob);
 
   if (arquivo.tipo.startsWith("image/")) {
     imagemLocal.src = url;
