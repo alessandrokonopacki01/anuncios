@@ -142,23 +142,23 @@ async function tocarMidia(item, startSeconds = 0) {
 
   pararTudo(false);
 
- if (item.tipo === "youtube") {
-  mostrarYoutube();
+  if (item.tipo === "youtube") {
+    mostrarYoutube();
 
-  if (!youtubePronto) {
-    console.warn("YouTube ainda não está pronto. Tentando novamente...");
-    setTimeout(() => tocarMidia(item, startSeconds), 500);
+    if (!youtubePronto) {
+      console.warn("YouTube ainda não está pronto. Tentando novamente...");
+      setTimeout(() => tocarMidia(item, startSeconds), 500);
+      return;
+    }
+
+    player.loadVideoById({
+      videoId: item.videoId,
+      startSeconds
+    });
+
+    player.playVideo();
     return;
   }
-
-  player.loadVideoById({
-    videoId: item.videoId,
-    startSeconds
-  });
-
-  player.playVideo();
-  return;
-}
 
   const arquivo = await buscarArquivo(item.arquivoId);
 
@@ -327,23 +327,24 @@ document.addEventListener("DOMContentLoaded", () => {
   document.body.appendChild(botao);
 
   botao.onclick = async () => {
-  try {
-    await document.documentElement.requestFullscreen();
-  } catch (e) {
-    console.log("Fullscreen bloqueado:", e);
-  }
-
-  botao.remove();
-
-  if (videoLocal) {
-    videoLocal.muted = false;
-    videoLocal.volume = 1;
-  }
-
-  const esperarYoutube = setInterval(() => {
-    if (youtubePronto) {
-      clearInterval(esperarYoutube);
-      iniciarSistema();
+    try {
+      await document.documentElement.requestFullscreen();
+    } catch (e) {
+      console.log("Fullscreen bloqueado:", e);
     }
-  }, 300);
-};
+
+    botao.remove();
+
+    if (videoLocal) {
+      videoLocal.muted = false;
+      videoLocal.volume = 1;
+    }
+
+    const esperarYoutube = setInterval(() => {
+      if (youtubePronto) {
+        clearInterval(esperarYoutube);
+        iniciarSistema();
+      }
+    }, 300);
+  };
+});
