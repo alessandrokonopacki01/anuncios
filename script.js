@@ -154,9 +154,15 @@ async function tocarMidia(item, startSeconds = 0) {
     return;
   }
 
-  const arquivo = await buscarArquivo(item.arquivoId);
+ const arquivo = await buscarArquivo(item.arquivoId);
 
-  const url = URL.createObjectURL(arquivo.blob);
+if (!arquivo || !arquivo.blob) {
+  console.warn("Arquivo não encontrado no IndexedDB:", item);
+  pararTudo(true);
+  return;
+}
+
+const url = URL.createObjectURL(arquivo.blob);
 
   if (arquivo.tipo.startsWith("image/")) {
     imagemLocal.src = url;
