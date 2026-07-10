@@ -211,220 +211,218 @@ async function tocarMidia(item, startSeconds = 0) {
     }
 
     player.loadVideoById({
-      videoId: item.videoId,
-      startSeconds: startSeconds || 0
+      videoId: "M7lc1UVf-VE",
+      startSeconds: 0
     });
 
     player.playVideo();
-    return;
-  }
+    
+    mostrarLoading("Carregando arquivo local...");
 
-  mostrarLoading("Carregando arquivo local...");
+    const arquivo = await buscarArquivo(item.arquivoId);
 
-  const arquivo = await buscarArquivo(item.arquivoId);
+    if (!arquivo || !arquivo.blob) {
+      console.warn("Arquivo não encontrado no IndexedDB:", item);
+      mostrarLoading("Arquivo não encontrado.");
+      pararTudo(true);
+      return;
+    }
 
-  if (!arquivo || !arquivo.blob) {
-    console.warn("Arquivo não encontrado no IndexedDB:", item);
-    mostrarLoading("Arquivo não encontrado.");
-    pararTudo(true);
-    return;
-  }
+    const url = URL.createObjectURL(arquivo.blob);
 
-  const url = URL.createObjectURL(arquivo.blob);
-
-  if (arquivo.tipo.startsWith("image/")) {
-    imagemLocal.src = url;
-    mostrarImagem();
-    esconderLoading();
-  } else {
-    videoLocal.src = url;
-    videoLocal.currentTime = startSeconds || 0;
-    mostrarVideo();
-    videoLocal.muted = false;
-    videoLocal.volume = 1;
-
-    videoLocal.onplaying = () => {
+    if (arquivo.tipo.startsWith("image/")) {
+      imagemLocal.src = url;
+      mostrarImagem();
       esconderLoading();
-    };
+    } else {
+      videoLocal.src = url;
+      videoLocal.currentTime = startSeconds || 0;
+      mostrarVideo();
+      videoLocal.muted = false;
+      videoLocal.volume = 1;
 
-    videoLocal.onwaiting = () => {
-      mostrarLoading("Carregando vídeo local...");
-    };
+      videoLocal.onplaying = () => {
+        esconderLoading();
+      };
 
-    videoLocal.onerror = () => {
-      mostrarLoading("Erro ao carregar vídeo local.");
-    };
+      videoLocal.onwaiting = () => {
+        mostrarLoading("Carregando vídeo local...");
+      };
 
-    videoLocal.play().catch(() => {
-      console.log("Autoplay bloqueado.");
-      mostrarLoading("Clique na tela para iniciar o vídeo.");
-    });
-  }
-}
+      videoLocal.onerror = () => {
+        mostrarLoading("Erro ao carregar vídeo local.");
+      };
 
-function mostrarYoutube() {
-  youtubeBox.style.display = "block";
-  youtubeBox.style.width = "100vw";
-  youtubeBox.style.height = "100vh";
-
-  videoLocal.style.display = "none";
-  imagemLocal.style.display = "none";
-}
-
-function mostrarVideo() {
-  youtubeBox.style.display = "none";
-  videoLocal.style.display = "block";
-  imagemLocal.style.display = "none";
-
-  try {
-    if (player && typeof player.pauseVideo === "function") {
-      player.pauseVideo();
+      videoLocal.play().catch(() => {
+        console.log("Autoplay bloqueado.");
+        mostrarLoading("Clique na tela para iniciar o vídeo.");
+      });
     }
-  } catch (e) {
-    console.warn("YouTube pausado/ignorado.");
-  }
-}
-
-function mostrarImagem() {
-  youtubeBox.style.display = "none";
-  videoLocal.style.display = "none";
-  imagemLocal.style.display = "block";
-}
-
-function pararTudo(limparTela = true) {
-  esconderLoading();
-
-  try {
-    if (player && typeof player.stopVideo === "function") {
-      player.stopVideo();
-    }
-  } catch (e) {
-    console.warn("Aviso do YouTube ignorado:", e);
   }
 
-  if (videoLocal) {
-    videoLocal.pause();
-  }
+  function mostrarYoutube() {
+    youtubeBox.style.display = "block";
+    youtubeBox.style.width = "100vw";
+    youtubeBox.style.height = "100vh";
 
-  if (limparTela) {
-    youtubeBox.style.display = "none";
     videoLocal.style.display = "none";
     imagemLocal.style.display = "none";
   }
-}
 
-function abrirDB() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 1);
+  function mostrarVideo() {
+    youtubeBox.style.display = "none";
+    videoLocal.style.display = "block";
+    imagemLocal.style.display = "none";
 
-    request.onupgradeneeded = () => {
-      const db = request.result;
-
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: "id" });
-      }
-    };
-
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-async function buscarArquivo(id) {
-  const db = await abrirDB();
-
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, "readonly");
-    const request = tx.objectStore(STORE_NAME).get(id);
-
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-function mostrarProximoAnuncio() {
-  const anuncios = pegarAnuncios();
-  const agora = minutosAtuais();
-
-  const proximos = anuncios
-    .filter(ad => converterHora(ad.horario) >= agora && !anunciosTocadosHoje.includes(ad.id))
-    .sort((a, b) => converterHora(a.horario) - converterHora(b.horario));
-}
-
-function limparControleDiario() {
-  const hoje = new Date().toDateString();
-
-  if (hoje !== dataControle) {
-    anunciosTocadosHoje = [];
-    dataControle = hoje;
-
-    sessionStorage.setItem("anunciosTocadosHoje", JSON.stringify(anunciosTocadosHoje));
-    sessionStorage.setItem("dataControle", dataControle);
-  }
-}
-
-function criarIdMidia(item) {
-  if (!item) return "";
-
-  return item.tipo + "_" + (item.videoId || item.arquivoId) + "_" + (item.inicio || item.horario || "");
-}
-
-function minutosAtuais() {
-  const agora = new Date();
-  return agora.getHours() * 60 + agora.getMinutes();
-}
-
-function converterHora(hora) {
-  const [h, m] = hora.split(":").map(Number);
-  return h * 60 + m;
-}
-
-function formatarHora(data) {
-  const h = String(data.getHours()).padStart(2, "0");
-  const m = String(data.getMinutes()).padStart(2, "0");
-  return `${h}:${m}`;
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const botao = document.createElement("button");
-
-  botao.innerText = "INICIAR TV";
-
-  botao.style.position = "fixed";
-  botao.style.top = "0";
-  botao.style.left = "0";
-  botao.style.width = "100vw";
-  botao.style.height = "100vh";
-  botao.style.fontSize = "40px";
-  botao.style.background = "black";
-  botao.style.color = "white";
-  botao.style.border = "none";
-  botao.style.zIndex = "99999";
-
-  document.body.appendChild(botao);
-
-  botao.onclick = async () => {
     try {
-      await document.documentElement.requestFullscreen();
+      if (player && typeof player.pauseVideo === "function") {
+        player.pauseVideo();
+      }
     } catch (e) {
-      console.log("Fullscreen bloqueado:", e);
+      console.warn("YouTube pausado/ignorado.");
     }
+  }
 
-    botao.remove();
+  function mostrarImagem() {
+    youtubeBox.style.display = "none";
+    videoLocal.style.display = "none";
+    imagemLocal.style.display = "block";
+  }
+
+  function pararTudo(limparTela = true) {
+    esconderLoading();
+
+    try {
+      if (player && typeof player.stopVideo === "function") {
+        player.stopVideo();
+      }
+    } catch (e) {
+      console.warn("Aviso do YouTube ignorado:", e);
+    }
 
     if (videoLocal) {
-      videoLocal.muted = false;
-      videoLocal.volume = 1;
+      videoLocal.pause();
     }
 
-    mostrarLoading("Preparando YouTube...");
+    if (limparTela) {
+      youtubeBox.style.display = "none";
+      videoLocal.style.display = "none";
+      imagemLocal.style.display = "none";
+    }
+  }
 
-    const esperarYoutube = setInterval(() => {
-      if (youtubePronto) {
-        clearInterval(esperarYoutube);
-        esconderLoading();
-        iniciarSistema();
+  function abrirDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, 1);
+
+      request.onupgradeneeded = () => {
+        const db = request.result;
+
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME, { keyPath: "id" });
+        }
+      };
+
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async function buscarArquivo(id) {
+    const db = await abrirDB();
+
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, "readonly");
+      const request = tx.objectStore(STORE_NAME).get(id);
+
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  function mostrarProximoAnuncio() {
+    const anuncios = pegarAnuncios();
+    const agora = minutosAtuais();
+
+    const proximos = anuncios
+      .filter(ad => converterHora(ad.horario) >= agora && !anunciosTocadosHoje.includes(ad.id))
+      .sort((a, b) => converterHora(a.horario) - converterHora(b.horario));
+  }
+
+  function limparControleDiario() {
+    const hoje = new Date().toDateString();
+
+    if (hoje !== dataControle) {
+      anunciosTocadosHoje = [];
+      dataControle = hoje;
+
+      sessionStorage.setItem("anunciosTocadosHoje", JSON.stringify(anunciosTocadosHoje));
+      sessionStorage.setItem("dataControle", dataControle);
+    }
+  }
+
+  function criarIdMidia(item) {
+    if (!item) return "";
+
+    return item.tipo + "_" + (item.videoId || item.arquivoId) + "_" + (item.inicio || item.horario || "");
+  }
+
+  function minutosAtuais() {
+    const agora = new Date();
+    return agora.getHours() * 60 + agora.getMinutes();
+  }
+
+  function converterHora(hora) {
+    const [h, m] = hora.split(":").map(Number);
+    return h * 60 + m;
+  }
+
+  function formatarHora(data) {
+    const h = String(data.getHours()).padStart(2, "0");
+    const m = String(data.getMinutes()).padStart(2, "0");
+    return `${h}:${m}`;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const botao = document.createElement("button");
+
+    botao.innerText = "INICIAR TV";
+
+    botao.style.position = "fixed";
+    botao.style.top = "0";
+    botao.style.left = "0";
+    botao.style.width = "100vw";
+    botao.style.height = "100vh";
+    botao.style.fontSize = "40px";
+    botao.style.background = "black";
+    botao.style.color = "white";
+    botao.style.border = "none";
+    botao.style.zIndex = "99999";
+
+    document.body.appendChild(botao);
+
+    botao.onclick = async () => {
+      try {
+        await document.documentElement.requestFullscreen();
+      } catch (e) {
+        console.log("Fullscreen bloqueado:", e);
       }
-    }, 300);
-  };
-});
+
+      botao.remove();
+
+      if (videoLocal) {
+        videoLocal.muted = false;
+        videoLocal.volume = 1;
+      }
+
+      mostrarLoading("Preparando YouTube...");
+
+      const esperarYoutube = setInterval(() => {
+        if (youtubePronto) {
+          clearInterval(esperarYoutube);
+          esconderLoading();
+          iniciarSistema();
+        }
+      }, 300);
+    };
+  });
