@@ -260,17 +260,26 @@ async function atualizarProgramacao() {
     const inicio = converterHora(programa.inicio);
     const fim = converterHora(programa.fim);
 
-    return minutosAgora >= inicio && minutosAgora < fim;
+    // Programação no mesmo dia
+    if (inicio < fim) {
+      return minutosAgora >= inicio && minutosAgora < fim;
+    }
+
+    // Programação que atravessa a meia-noite
+    if (inicio > fim) {
+      return minutosAgora >= inicio || minutosAgora < fim;
+    }
+
+    // Mesmo horário de início e fim = 24 horas
+    return true;
   });
 
   if (!programaAtual) {
-    if (midiaAtualId !== null) {
-      midiaAtualId = null;
-      midiaProgramaAtual = null;
+    midiaAtualId = null;
+    midiaProgramaAtual = null;
 
-      pararTudo(true);
-      atualizarStatus("Nenhum programa neste horário.");
-    }
+    pararTudo(true);
+    atualizarStatus("Nenhum programa neste horário.");
 
     return;
   }
@@ -753,8 +762,7 @@ function mostrarProximoAnuncio() {
   const proximo = proximos[0];
 
   atualizarProximo(
-    `Próximo anúncio: ${
-      proximo.nome || "Anúncio"
+    `Próximo anúncio: ${proximo.nome || "Anúncio"
     } às ${proximo.horario}`
   );
 }
@@ -813,10 +821,9 @@ function nomeMidiaAtual() {
   }
 
   if (midiaProgramaAtual) {
-    return `No ar: ${
-      midiaProgramaAtual.nome ||
+    return `No ar: ${midiaProgramaAtual.nome ||
       "Programação atual"
-    }`;
+      }`;
   }
 
   return "Reproduzindo mídia.";
