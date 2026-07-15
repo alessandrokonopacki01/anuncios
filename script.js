@@ -629,6 +629,58 @@ function mostrarImagem() {
   }
 }
 
+function mostrarYoutube() {
+  const youtubeContainer =
+    document.getElementById("youtubeContainer");
+
+  if (youtubeContainer) {
+    youtubeContainer.style.display = "block";
+  }
+
+  if (videoLocal) {
+    videoLocal.style.display = "none";
+    videoLocal.pause();
+  }
+
+  if (imagemLocal) {
+    imagemLocal.style.display = "none";
+  }
+}
+
+function mostrarVideo() {
+  const youtubeContainer =
+    document.getElementById("youtubeContainer");
+
+  if (youtubeContainer) {
+    youtubeContainer.style.display = "none";
+  }
+
+  if (videoLocal) {
+    videoLocal.style.display = "block";
+  }
+
+  if (imagemLocal) {
+    imagemLocal.style.display = "none";
+  }
+}
+
+function mostrarImagem() {
+  const youtubeContainer =
+    document.getElementById("youtubeContainer");
+
+  if (youtubeContainer) {
+    youtubeContainer.style.display = "none";
+  }
+
+  if (videoLocal) {
+    videoLocal.style.display = "none";
+  }
+
+  if (imagemLocal) {
+    imagemLocal.style.display = "block";
+  }
+}
+
 function pararYoutube() {
   try {
     if (
@@ -651,6 +703,9 @@ function pararTudo(limparTela = true) {
   }
 
   if (limparTela) {
+    const youtubeContainer =
+      document.getElementById("youtubeContainer");
+
     if (youtubeContainer) {
       youtubeContainer.style.display = "none";
     }
