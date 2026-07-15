@@ -2,54 +2,73 @@ html,
 body {
   width: 100%;
   height: 100%;
+  margin: 0;
   overflow: hidden;
 }
 
 body {
-  margin: 0;
   background: #111;
   color: white;
   font-family: Arial, sans-serif;
   text-align: center;
 }
 
-.tv {
+.tv,
+.tela {
   width: 100vw;
   height: 100vh;
   margin: 0;
   padding: 0;
-}
-
-h1 {
-  color: #00ff88;
-}
-
-.tela {
-  width: 100vw;
-  height: 100vh;
   background: black;
   overflow: hidden;
 }
 
-#youtubePlayer,
-#videoLocal,
-#imagemLocal {
-  width: 100%;
-  height: 100%;
+/* CONTÊINER EXTERNO DO YOUTUBE */
+#youtubeContainer {
   display: none;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
   background: black;
+  z-index: 1;
 }
 
+/* PLAYER E IFRAME GERADO PELO YOUTUBE */
+#youtubePlayer,
+#youtubeContainer iframe {
+  width: 100% !important;
+  height: 100% !important;
+  border: none;
+  display: block;
+}
+
+/* VÍDEO E IMAGEM LOCAL */
 #videoLocal,
 #imagemLocal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black;
   object-fit: contain;
+  z-index: 1;
 }
 
+/* INFORMAÇÕES */
 .info {
-  margin-top: 15px;
+  position: fixed;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
   font-size: 18px;
+  color: white;
+  text-shadow: 0 2px 5px black;
 }
 
+/* LOADING */
 #loadingBox {
   display: none;
   position: fixed;

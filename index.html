@@ -10,16 +10,29 @@
 
 <body>
   <div class="tv">
-    <div class="tela">
+  <div class="tela">
+
+    <div id="youtubeContainer">
       <div id="youtubePlayer"></div>
-      <video id="videoLocal" controls autoplay muted></video>
-      <img id="imagemLocal" alt="Mídia local">
-    </div>    
-  </div>
-  <div id="loadingBox">
-  <div id="loadingTexto">Carregando vídeo...</div>
-  <div id="barraLoading">
-    <div id="progressoLoading"></div>
+    </div>
+
+    <video id="videoLocal"></video>
+
+    <img id="imagemLocal" alt="Mídia local">
+
+    <div class="info">
+      <p id="status">Carregando programação...</p>
+      <p id="proximo"></p>
+    </div>
+
+    <div id="loadingBox">
+      <div id="loadingTexto">Carregando...</div>
+
+      <div id="barraLoading">
+        <div id="progressoLoading"></div>
+      </div>
+    </div>
+
   </div>
 </div>
 

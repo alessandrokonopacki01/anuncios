@@ -31,7 +31,7 @@ let dataControle =
    ELEMENTOS DA PÁGINA
 ========================================================= */
 
-const youtubeBox = document.getElementById("youtubePlayer");
+const youtubeContainer = document.getElementById("youtubeContainer");
 const videoLocal = document.getElementById("videoLocal");
 const imagemLocal = document.getElementById("imagemLocal");
 
@@ -578,28 +578,13 @@ function tocarVideoLocal(url, startSeconds, item) {
 ========================================================= */
 
 function mostrarYoutube() {
-  if (youtubeBox) {
-    youtubeBox.style.display = "block";
-    youtubeBox.style.width = "100vw";
-    youtubeBox.style.height = "100vh";
+  if (youtubeContainer) {
+    youtubeContainer.style.display = "block";
   }
 
   if (videoLocal) {
     videoLocal.style.display = "none";
-  }
-
-  if (imagemLocal) {
-    imagemLocal.style.display = "none";
-  }
-}
-
-function mostrarVideo() {
-  if (youtubeBox) {
-    youtubeBox.style.display = "none";
-  }
-
-  if (videoLocal) {
-    videoLocal.style.display = "block";
+    videoLocal.pause();
   }
 
   if (imagemLocal) {
@@ -608,8 +593,22 @@ function mostrarVideo() {
 }
 
 function mostrarImagem() {
-  if (youtubeBox) {
-    youtubeBox.style.display = "none";
+  if (youtubeContainer) {
+    youtubeContainer.style.display = "none";
+  }
+
+  if (videoLocal) {
+    videoLocal.style.display = "none";
+  }
+
+  if (imagemLocal) {
+    imagemLocal.style.display = "block";
+  }
+}
+
+function mostrarImagem() {
+  if (youtubeContainer) {
+    youtubeContainer.style.display = "none";
   }
 
   if (videoLocal) {
@@ -643,8 +642,8 @@ function pararTudo(limparTela = true) {
   }
 
   if (limparTela) {
-    if (youtubeBox) {
-      youtubeBox.style.display = "none";
+    if (youtubeContainer) {
+      youtubeContainer.style.display = "none";
     }
 
     if (videoLocal) {
