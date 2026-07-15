@@ -411,7 +411,7 @@ async function tocarMidia(item, startSeconds = 0) {
     return;
   }
 
-  if (item.tipo === "arquivo") {
+  if (item.arquivoId) {
     await tocarArquivoLocal(item, startSeconds);
     return;
   }
